@@ -18,7 +18,7 @@ class UserCell: UICollectionViewCell, SelfConfiguringCell {
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupConstraints()
-        backgroundColor = .white
+        backgroundColor = .systemBackground
         self.layer.cornerRadius = 4
         
         self.layer.shadowColor = #colorLiteral(red: 0.2549019754, green: 0.2745098174, blue: 0.3019607961, alpha: 1)

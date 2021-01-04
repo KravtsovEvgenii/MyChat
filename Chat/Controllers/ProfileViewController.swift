@@ -24,6 +24,7 @@ class ProfileViewController: UIViewController {
         self.imageView.sd_setImage(with: URL(string: user.avatarStringURL), completed: nil)
         self.aboutMeLabel.text = user.description
         super.init(nibName: nil, bundle: nil)
+        textField.delegate = self
     }
     
     required init?(coder: NSCoder) {
@@ -81,7 +82,7 @@ extension ProfileViewController {
         aboutMeLabel.translatesAutoresizingMaskIntoConstraints = false
         textField.translatesAutoresizingMaskIntoConstraints = false
         aboutMeLabel.numberOfLines = 0
-        contentView.backgroundColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)
+        contentView.backgroundColor = .systemBackground
         contentView.layer.cornerRadius = 30
         
         if let button = textField.rightView as? UIButton {
@@ -103,22 +104,29 @@ extension ProfileViewController {
         }
     }
 }
-//MARK: Canvas setup
-import SwiftUI
-struct ProfileViewControllerProvider: PreviewProvider {
-    
-    static var previews: some View {
-        ContainerView().edgesIgnoringSafeArea(.all)
-    }
-    
-    struct ContainerView: UIViewControllerRepresentable{
-        typealias UIViewControllerType = ProfileViewController
-        
-        func makeUIViewController(context: Self.Context) -> Self.UIViewControllerType{
-            return ProfileViewController(user: ChatUser(username: "", email: "", avatarStringURL: "", description: "", sex: "", id: ""))
-        }
-        func updateUIViewController(_ uiViewController: UIViewControllerType, context: Context) {
-            
-        }
+
+extension ProfileViewController: UITextFieldDelegate {
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        sendMessage()
+        return true
     }
 }
+//MARK: Canvas setup
+//import SwiftUI
+//struct ProfileViewControllerProvider: PreviewProvider {
+//
+//    static var previews: some View {
+//        ContainerView().edgesIgnoringSafeArea(.all)
+//    }
+//
+//    struct ContainerView: UIViewControllerRepresentable{
+//        typealias UIViewControllerType = ProfileViewController
+//
+//        func makeUIViewController(context: Self.Context) -> Self.UIViewControllerType{
+//            return ProfileViewController(user: ChatUser(username: "", email: "", avatarStringURL: "", description: "", sex: "", id: ""))
+//        }
+//        func updateUIViewController(_ uiViewController: UIViewControllerType, context: Context) {
+//
+//        }
+//    }
+//}

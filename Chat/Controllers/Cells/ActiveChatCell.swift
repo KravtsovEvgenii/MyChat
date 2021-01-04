@@ -13,7 +13,6 @@ import SDWebImage
 class ActiveChatCell: UICollectionViewCell, SelfConfiguringCell {
     static var reuseId: String = "ActiveChatCell"
     
-    
     let friendImageView = UIImageView()
     let friendName = UILabel(withText: "User name", font: .laoSangamMN20())
     let lastMessage = UILabel(withText: "How are you?", font: .laoSangamMN18())
@@ -21,7 +20,7 @@ class ActiveChatCell: UICollectionViewCell, SelfConfiguringCell {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        backgroundColor = .white
+        backgroundColor = .systemBackground
         setupConstraints()
         
         self.layer.cornerRadius = 4

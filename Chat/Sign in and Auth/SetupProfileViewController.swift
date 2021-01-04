@@ -10,6 +10,9 @@ import FirebaseAuth
 import SDWebImage
 
 class SetupProfileViewController: UIViewController {
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
     init(currentUser: User){
         self.currentUser = currentUser
         super.init(nibName: nil, bundle: nil)
@@ -42,10 +45,25 @@ class SetupProfileViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .white
+        view.backgroundColor = .systemBackground
         setupConstraints()
         gotoChatsButton.addTarget(self, action: #selector(gotoChatsButtonAction), for: .touchUpInside)
         addPhotoView.plusButton.addTarget(self, action: #selector(addPhotoAction), for: .touchUpInside)
+        fullNameTextField.delegate = self
+        aboutMeTextField.delegate = self
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(keyboardWillShow),
+            name: UIResponder.keyboardWillShowNotification,
+            object: nil
+        )
+    }
+    @objc func keyboardWillShow(_ notification: Notification) {
+        if let keyboardFrame: NSValue = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue {
+            let keyboardRectangle = keyboardFrame.cgRectValue
+            let keyboardHeight = keyboardRectangle.height
+            self.view.frame.origin.y = -keyboardHeight
+        }
     }
     
     @objc private func addPhotoAction () {
@@ -78,6 +96,14 @@ class SetupProfileViewController: UIViewController {
     }
     
   
+}
+extension SetupProfileViewController: UITextFieldDelegate {
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        self.view.frame.origin.y = 0
+        textField.resignFirstResponder()
+        return true
+    }
+    
 }
 
 //MARK: Setup Constraints

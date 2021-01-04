@@ -8,7 +8,9 @@
 import UIKit
 
 class LoginViewController: UIViewController {
-    
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
     //MARK: Properties
     //Labels
     let welcomeLabel = UILabel(withText: "Welcome back!", font: .avenir26())
@@ -27,10 +29,26 @@ class LoginViewController: UIViewController {
     weak var delegate: AuthNavigationDelegate? 
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .white
+        view.backgroundColor = .systemBackground
         setupConstraints()
         loginButton.addTarget(self, action: #selector(loginButtonAction), for: .touchUpInside)
         signUpButton.addTarget(self, action: #selector(signUpButtonAction), for: .touchUpInside)
+        emailTextField.delegate = self
+        passwordTextField.delegate = self
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(keyboardWillShow),
+            name: UIResponder.keyboardWillShowNotification,
+            object: nil
+        )
+    }
+    
+    @objc func keyboardWillShow(_ notification: Notification) {
+        if let keyboardFrame: NSValue = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue {
+            let keyboardRectangle = keyboardFrame.cgRectValue
+            let keyboardHeight = keyboardRectangle.height
+            self.view.frame.origin.y = -keyboardHeight
+        }
     }
     @objc private func loginButtonAction() {
         AuthService.shared.login(withEmail: emailTextField.text, withPassword: passwordTextField.text) { (result) in
@@ -107,7 +125,13 @@ extension LoginViewController {
         
     }
 }
-
+extension LoginViewController: UITextFieldDelegate {
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        self.view.frame.origin.y = 0
+        textField.resignFirstResponder()
+        return true
+    }
+}
 //MARK: Canvas setup
 import SwiftUI
 struct LoginViewControllerProvider: PreviewProvider {

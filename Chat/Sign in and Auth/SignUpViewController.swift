@@ -8,6 +8,9 @@
 import UIKit
 
 class SignUpViewController: UIViewController {
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
 //MARK: Properties
     //Labels
     let welcomeLabel = UILabel(withText: "Welcome!", font: .avenir26())
@@ -27,10 +30,27 @@ class SignUpViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupConstraints()
-        view.backgroundColor = .white
+        view.backgroundColor = .systemBackground
         signUpButton.addTarget(self, action: #selector(signUpButtonAction), for: .touchUpInside)
         loginButton.addTarget(self, action: #selector(loginButtonAction), for: .touchUpInside)
-       
+        emailTextField.delegate = self
+        passwordTextField.delegate = self
+        confirmPasswordTextField.delegate = self
+        passwordTextField.isSecureTextEntry = true
+        confirmPasswordTextField.isSecureTextEntry = true
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(keyboardWillShow),
+            name: UIResponder.keyboardWillShowNotification,
+            object: nil
+        )
+    }
+    @objc func keyboardWillShow(_ notification: Notification) {
+        if let keyboardFrame: NSValue = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue {
+            let keyboardRectangle = keyboardFrame.cgRectValue
+            let keyboardHeight = keyboardRectangle.height
+            self.view.frame.origin.y = -keyboardHeight
+        }
     }
     @objc private func signUpButtonAction() {
         AuthService.shared.registerUser(withEmail: emailTextField.text, withPassword: passwordTextField.text, confirmPassword: confirmPasswordTextField.text) { (result) in
@@ -93,7 +113,13 @@ extension SignUpViewController {
      
     }
 }
-
+extension SignUpViewController: UITextFieldDelegate {
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        self.view.frame.origin.y = 0
+        textField.resignFirstResponder()
+        return true
+    }
+}
 
 
 //MARK: Canvas setup
